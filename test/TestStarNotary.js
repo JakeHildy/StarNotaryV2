@@ -74,3 +74,13 @@ it("lets user2 buy a star and decreases its balance in ether", async () => {
     Number(balanceOfUser2BeforeTransaction) - Number(balanceAfterUser2BuysStar);
   assert.equal(value, starPrice);
 });
+
+it("has a token name", async () => {
+  let instance = await StarNotary.deployed();
+  assert.equal(await instance.name.call(), "Claim Starz");
+});
+
+it("has a token symbol", async () => {
+  let instance = await StarNotary.deployed();
+  assert.equal(await instance.symbol.call(), "STRZ");
+});
