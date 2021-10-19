@@ -84,3 +84,55 @@ it("has a token symbol", async () => {
   let instance = await StarNotary.deployed();
   assert.equal(await instance.symbol.call(), "STRZ");
 });
+
+it("lookUptokenIdToStarInfo test", async () => {
+  let instance = await StarNotary.deployed();
+  const user1 = accounts[1];
+  // 1. create a Star with different tokenId
+  const starId = 6;
+  await instance.createStar("Alpha Centauri", starId, { from: user1 });
+  // 2. Call your method lookUptokenIdToStarInfo
+  const starName = await instance.lookUptokenIdToStarInfo(starId);
+  // 3. Verify if you Star name is the same
+  assert.equal(starName, "Alpha Centauri");
+});
+
+it("can tell owner of a star", async () => {
+  let instance = await StarNotary.deployed();
+  const user2 = accounts[2];
+  const ownerOfStar3 = await instance.ownerOf(3);
+  assert.equal(user2, ownerOfStar3);
+});
+
+it("lets 2 users exchange stars", async () => {
+  let instance = await StarNotary.deployed();
+  let user1 = accounts[1];
+  let star1Id = 11;
+  let user2 = accounts[2];
+  let star2Id = 22;
+  let balance = web3.utils.toWei(".05", "ether");
+  // 1. create 2 Stars with different tokenId
+  await instance.createStar("Vega", star1Id, { from: user1 });
+  assert.equal(await instance.ownerOf(star1Id), user1);
+  await instance.createStar("Pleiades", star2Id, { from: user2 });
+  assert.equal(await instance.ownerOf(star2Id), user2);
+  // // 2. Call the exchangeStars functions implemented in the Smart Contract
+  await instance.exchangeStars(star1Id, star2Id, { from: user1 });
+  // // 3. Verify that the owners changed
+  assert.equal(await instance.ownerOf(star2Id), user1);
+  assert.equal(await instance.ownerOf(star1Id), user2);
+});
+
+it("lets a user transfer a star", async () => {
+  let instance = await StarNotary.deployed();
+  let user1 = accounts[1];
+  let user2 = accounts[2];
+  let starId = 33;
+  // 1. create a Star with different tokenId
+  await instance.createStar("Antares", starId, { from: user1 });
+  assert.equal(await instance.ownerOf(starId), user1);
+  // 2. use the transferStar function implemented in the Smart Contract
+  await instance.transferStar(user2, starId, { from: user1 });
+  // 3. Verify the star owner changed.
+  assert.equal(await instance.ownerOf(starId), user2);
+});

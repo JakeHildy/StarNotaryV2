@@ -35,8 +35,19 @@ const App = {
     const { createStar } = this.meta.methods;
     const name = document.getElementById("starName").value;
     const id = document.getElementById("starId").value;
+    console.log("Attempting to create star " + name);
     await createStar(name, id).send({ from: this.account });
     App.setStatus("New Star Owner is " + this.account + ".");
+  },
+
+  lookupStar: async function () {
+    const { lookUptokenIdToStarInfo } = this.meta.methods;
+    const lookupId = document.getElementById("starLookupId").value;
+    console.log("Looking up star " + lookupId);
+    console.log(typeof lookupId);
+    const starName = await lookUptokenIdToStarInfo(lookupId).call();
+    console.log(starName);
+    App.setStatus("Star with id: " + lookupId + " is called " + starName);
   },
 };
 
